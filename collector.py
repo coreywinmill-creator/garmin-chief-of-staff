@@ -80,6 +80,10 @@ def main():
         data['sources']['activity_details_30d']=details
     for name in ('latest.json',f'garmin-{t}.json'):
         (OUT/name).write_text(json.dumps(data,indent=2,default=str),encoding='utf-8')
+        for name in ('get_daily_hrv', 'get_daily_hrv_summaries', 'get_daily_body_battery'):
+    value = data['sources'].get(name)
+    print('METRIC FORMAT:', name, 'type=', type(value).__name__,
+          'keys=', list(value.keys()) if isinstance(value, dict) else 'not a dictionary')
     print('Collected:',', '.join(data['sources']));print('Unsupported:',', '.join(data['unsupported']))
     print('Local raw report:',OUT/'latest.json')
 if __name__=='__main__':main()
