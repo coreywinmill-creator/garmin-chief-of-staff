@@ -16,7 +16,7 @@ jobs:
       GARMIN_PERSONAL_API_KEY: ${{ secrets.GARMIN_PERSONAL_API_KEY }}
       GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
       GARMIN_DRIVE_FILE_ID: ${{ secrets.GARMIN_DRIVE_FILE_ID }}
-      GARMIN_COS_HOME: ${{ runner.temp }}/garmin-cos
+      GARMIN_COS_HOME: /tmp/garmin-cos
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
