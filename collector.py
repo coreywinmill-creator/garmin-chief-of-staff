@@ -78,7 +78,7 @@ def main():
                 except Exception as exc:record[name+'_error']=type(exc).__name__
             if len(record)>1:details.append(record)
         data['sources']['activity_details_30d']=details
-            for name in ('latest.json', f'garmin-{t}.json'):
+    for name in ('latest.json', f'garmin-{t}.json'):
         (OUT/name).write_text(
             json.dumps(data, indent=2, default=str),
             encoding='utf-8'
