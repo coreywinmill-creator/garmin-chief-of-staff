@@ -84,20 +84,29 @@ def main():
             encoding='utf-8'
         )
 
-    # Check Garmin metric response formats
-    for metric_name in (
-        'get_daily_hrv',
-        'get_daily_hrv_summaries',
-        'get_daily_body_battery'
-    ):
-        value = data['sources'].get(metric_name)
+        # Inspect measurement field names only; never print values
+    hrv = data['sources'].get('get_daily_hrv') or {}
+    hrv_summary = hrv.get('hrvSummary') if isinstance(hrv, dict) else None
 
-        print(
-            'METRIC FORMAT:',
-            metric_name,
-            'type=', type(value).__name__,
-            'keys=', list(value.keys()) if isinstance(value, dict) else 'not a dictionary'
-        )
+    print(
+        'HRV FIELDS:',
+        list(hrv_summary.keys()) if isinstance(hrv_summary, dict) else 'unavailable'
+    )
+
+    hrv_trends = data['sources'].get('get_daily_hrv_summaries') or {}
+    summaries = hrv_trends.get('hrvSummaries') if isinstance(hrv_trends, dict) else None
+
+    print(
+        'HRV TREND FIELDS:',
+        list(summaries[0].keys()) if isinstance(summaries, list) and summaries and isinstance(summaries[0], dict) else 'unavailable'
+    )
+
+    battery = data['sources'].get('get_daily_body_battery') or []
+
+    print(
+        'BODY BATTERY FIELDS:',
+        list(battery[0].keys()) if isinstance(battery, list) and battery and isinstance(battery[0], dict) else 'unavailable'
+    )
 
     print('Collected:', ', '.join(data['sources']))
     print('Unsupported:', ', '.join(data['unsupported']))
