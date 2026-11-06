@@ -44,7 +44,10 @@ def main():
         dates=[((t,),{}), ((),{'date':t}), ((),{'calendar_date':t}), ((),{'date_str':t})]
         ranges=[((s,t),{}),((),{'start_date':s,'end_date':t}), ((),{'start':s,'end':t})]
         candidates={
-          'get_hrv_data':dates,'get_hrv':dates,'get_body_battery':dates,
+  'get_daily_hrv':dates,
+  'get_daily_hrv_summaries':ranges,
+  'get_daily_body_battery':ranges,
+  'get_hrv_data':dates,'get_hrv':dates,'get_body_battery':dates,
           'get_training_readiness':dates,'get_training_status':dates,
           'get_recovery_time':dates,'get_vo2max':dates,'get_max_metrics':dates,
           'get_daily_heart_rate':dates,'get_heart_rates':dates,
