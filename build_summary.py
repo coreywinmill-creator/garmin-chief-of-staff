@@ -45,15 +45,10 @@ for a in acts[:100]:
       'elevation_gain_meters':get(a,'elevationGain'),'average_cadence':get(a,'averageRunningCadenceInStepsPerMinute')})
 # Export scalar summary fields only from optional sources, never whole raw objects.
 allowed={
- 'get_hrv_data':('weeklyAvg','lastNightAvg','lastNight5MinHigh','baseline','status'),
- 'get_hrv':('weeklyAvg','lastNightAvg','status'),
- 'get_body_battery':('bodyBatteryValue','chargedValue','drainedValue'),
- 'get_training_readiness':('score','level','recoveryTime','sleepScore','acuteLoad'),
- 'get_training_status':('trainingStatus','acuteTrainingLoad','loadFocus'),
- 'get_recovery_time':('recoveryTime','recoveryTimeHours'),
- 'get_vo2max':('vo2MaxValue','vo2max','vo2MaxPreciseValue'),
- 'get_max_metrics':('vo2MaxValue','vo2MaxPreciseValue'),
-}
+ 'get_daily_hrv':('calendarDate','weeklyAvg','lastNightAvg','lastNight5MinHigh','status'),
+ 'get_daily_hrv_summaries':('weeklyAvg','lastNightAvg','status'),
+ 'get_daily_body_battery':('bodyBatteryValue','chargedValue','drainedValue'),
+ 'get_daily_heart_rate':('calendarDate','restingHeartRate','minHeartRate','maxHeartRate'),
 for source,keys in allowed.items():
     value=sources.get(source)
     if isinstance(value,dict):
