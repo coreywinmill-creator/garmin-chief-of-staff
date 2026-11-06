@@ -55,5 +55,54 @@ for source,keys in allowed.items():
     if isinstance(value,dict):
         subset={k:safe(value[k]) for k in keys if k in value and safe(value[k]) is not None}
         if subset:summary['additional_metrics'][source]=subset
+# Export privacy-filtered HRV measurements
+hrv = sources.get('get_daily_hrv') or {}
+if isinstance(hrv, dict):
+    hrv_summary = hrv.get('hrvSummary') or {}
+
+    if isinstance(hrv_summary, dict):
+        keys = (
+            'calendarDate',
+            'weeklyAvg',
+            'lastNightAvg',
+            'lastNight5MinHigh',
+            'status'
+        )
+
+        summary['additional_metrics']['hrv'] = {
+            k: hrv_summary[k]
+            for k in keys
+            if k in hrv_summary and safe(hrv_summary[k]) is not None
+        }
+
+# Export HRV trends without account identifiers
+hrv_data = sources.get('get_daily_hrv_summaries') or {}
+if isinstance(hrv_data, dict):
+    records = hrv_data.get('hrvSummaries') or []
+
+    if isinstance(records, list):
+        summary['additional_metrics']['hrv_trend'] = [
+            {
+                k: record[k]
+                for k in ('calendarDate', 'weeklyAvg', 'lastNightAvg', 'status')
+                if k in record and safe(record[k]) is not None
+            }
+            for record in records[-14:]
+            if isinstance(record, dict)
+        ]
+
+# Export daily Body Battery totals
+battery = sources.get('get_daily_body_battery') or []
+
+if isinstance(battery, list):
+    summary['additional_metrics']['body_battery'] = [
+        {
+            k: record[k]
+            for k in ('date', 'charged', 'drained')
+            if k in record and safe(record[k]) is not None
+        }
+        for record in battery[-7:]
+        if isinstance(record, dict)
+    ]
 Path(sys.argv[2]).write_text(json.dumps(summary,indent=2,ensure_ascii=False),encoding='utf-8')
 print('Privacy-reduced summary updated:',sys.argv[2])
