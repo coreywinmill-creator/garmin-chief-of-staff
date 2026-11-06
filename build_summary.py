@@ -49,6 +49,7 @@ allowed={
  'get_daily_hrv_summaries':('weeklyAvg','lastNightAvg','status'),
  'get_daily_body_battery':('bodyBatteryValue','chargedValue','drainedValue'),
  'get_daily_heart_rate':('calendarDate','restingHeartRate','minHeartRate','maxHeartRate'),
+}
 for source,keys in allowed.items():
     value=sources.get(source)
     if isinstance(value,dict):
