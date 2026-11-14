@@ -1,6 +1,7 @@
 """Read-only Garmin collector: optional API features are capability-detected."""
 import inspect, json, os
 from datetime import date, timedelta, datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from garmin_personal_api import GarminPersonalApiClient, PersonalApiAuthenticator
 ROOT=Path(os.environ.get('GARMIN_COS_HOME',Path.home()/'GarminChiefOfStaff'))
@@ -27,12 +28,20 @@ def optional(client, name, variants, results, unavailable):
     unavailable[name]='no_compatible_signature'
 
 def main():
-    today=date.today(); start=today-timedelta(days=30); t=today.isoformat(); s=start.isoformat()
+    today=datetime.now(
+    ZoneInfo("America/New_York")
+).date(); start=today-timedelta(days=30); t=today.isoformat(); s=start.isoformat()
     data={'generated_at_local':datetime.now().astimezone().isoformat(), 'period':{'start':s,'end':t},'sources':{},'errors':{},'unsupported':{},'note':'Raw local data: private; do not upload to Drive.'}
     with PersonalApiAuthenticator() as auth: token=auth.obtain_token(key)
     with GarminPersonalApiClient(token.access_token) as client:
         basic={
-            'sleep_today':lambda:client.get_daily_sleep(t),
+            'sleep_today': lambda: client.get_daily_sleep(t),
+'sleep_yesterday': lambda: client.get_daily_sleep(
+    (today - timedelta(days=1)).isoformat()
+),
+'sleep_two_days_ago': lambda: client.get_daily_sleep(
+    (today - timedelta(days=2)).isoformat()
+),
             'steps_7d':lambda:client.get_daily_steps((today-timedelta(days=7)).isoformat(),t),
             'stress_7d':lambda:client.get_daily_stress((today-timedelta(days=7)).isoformat(),t),
             'activities_30d':lambda:client.search_activities(start=0,limit=100,start_date=s,end_date=t),
