@@ -22,7 +22,7 @@ jobs:
     env:
       GARMIN_PERSONAL_API_KEY: ${{ secrets.GARMIN_PERSONAL_API_KEY }}
       GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
-      GARMIN_HISTORY_DRIVE_FOLDER_ID: ${{ secrets.GARMIN_HISTORY_DRIVE_FOLDER_ID }}
+      GARMIN_HISTORY_DRIVE_FILE_ID: '1xZXGlE4ftjN76lTRD2uY6lzDMEjXOm9K'
       GARMIN_HISTORY_DAYS: ${{ inputs.days }}
       GARMIN_HISTORY_MAX_PAGES: ${{ inputs.max_pages }}
     steps:
@@ -34,5 +34,5 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Export privacy-filtered activity history
         run: python backfill_history.py
-      - name: Upload dated archive to private Drive folder
+      - name: Update existing private Drive archive
         run: python upload_history_drive.py "$RUNNER_TEMP/garmin-history.json"
