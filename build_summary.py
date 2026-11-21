@@ -12,8 +12,16 @@ def numeric(v):return v if isinstance(v,(float,int)) and not isinstance(v,bool) 
 def safe(v):
     if isinstance(v,(str,int,float,bool)) or v is None:return v
     return None
-sleep=sources.get('sleep_today') or {}
-if isinstance(sleep,dict) and isinstance(sleep.get('dailySleepDTO'),dict):sleep=sleep['dailySleepDTO']
+# Garmin may not finalize today's sleep until later. Use the newest valid day.
+sleep={}
+for name in ('sleep_today','sleep_yesterday','sleep_two_days_ago','sleep_three_days_ago'):
+    candidate=sources.get(name) or {}
+    if isinstance(candidate,dict) and isinstance(candidate.get('dailySleepDTO'),dict):
+        candidate=candidate['dailySleepDTO']
+    if isinstance(candidate,dict) and any(candidate.get(k) is not None for k in
+        ('sleepTimeSeconds','sleepScores','deepSleepSeconds')):
+        sleep=candidate
+        break
 score=get(sleep,'sleepScores') or {}
 overall=get(score,'overall') or {}
 secs=get(sleep,'sleepTimeSeconds')
@@ -49,6 +57,11 @@ allowed={
  'get_daily_hrv_summaries':('weeklyAvg','lastNightAvg','status'),
  'get_daily_body_battery':('bodyBatteryValue','chargedValue','drainedValue'),
  'get_daily_heart_rate':('calendarDate','restingHeartRate','minHeartRate','maxHeartRate'),
+ 'get_training_readiness':('calendarDate','score','level','feedbackShort','feedbackLong'),
+ 'get_training_status':('calendarDate','trainingStatus','trainingStatusFeedback'),
+ 'get_recovery_time':('calendarDate','recoveryTime'),
+ 'get_vo2max':('calendarDate','vo2MaxValue','vo2MaxPreciseValue'),
+ 'get_max_metrics':('calendarDate','vo2MaxValue','vo2MaxPreciseValue'),
 }
 for source,keys in allowed.items():
     value=sources.get(source)
