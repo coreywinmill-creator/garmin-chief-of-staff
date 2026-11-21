@@ -1,0 +1,38 @@
+name: Garmin history backfill (manual, privacy filtered)
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Days of activity history (31-3650)"
+        required: true
+        default: "365"
+      max_pages:
+        description: "Maximum pages of 100 activities (1-100)"
+        required: true
+        default: "20"
+permissions:
+  contents: read
+concurrency:
+  group: garmin-history-backfill
+  cancel-in-progress: false
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GARMIN_PERSONAL_API_KEY: ${{ secrets.GARMIN_PERSONAL_API_KEY }}
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      GARMIN_HISTORY_DRIVE_FOLDER_ID: ${{ secrets.GARMIN_HISTORY_DRIVE_FOLDER_ID }}
+      GARMIN_HISTORY_DAYS: ${{ inputs.days }}
+      GARMIN_HISTORY_MAX_PAGES: ${{ inputs.max_pages }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Export privacy-filtered activity history
+        run: python backfill_history.py
+      - name: Upload dated archive to private Drive folder
+        run: python upload_history_drive.py "$RUNNER_TEMP/garmin-history.json"
