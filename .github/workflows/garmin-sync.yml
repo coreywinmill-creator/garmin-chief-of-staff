@@ -1,8 +1,7 @@
 name: Garmin Chief of Staff cloud v2 test
 on:
   schedule:
-    - cron: '0 0 * * *'   # 7 PM EST (winter)
-    - cron: '0 23 * * *'  # 7 PM EDT (summer)
+    - cron: '0 23 * * *'  # One daily run: 6 PM EST / 7 PM EDT; GitHub cron uses UTC
   workflow_dispatch:
 permissions:
   contents: read
