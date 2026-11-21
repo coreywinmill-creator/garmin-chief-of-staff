@@ -9,12 +9,13 @@ This branch proposes changes for review before merging to main.
 - Raw Garmin data stays on the ephemeral GitHub runner. Only the privacy-filtered summary is uploaded to the existing configured Drive file.
 
 ## Historical activities (separate manual operation)
-1. Create a **private** Google Drive folder for Garmin activity archives. Grant the existing Google service account Editor access to that folder.
-2. Add the folder ID as the GitHub Actions repository secret `GARMIN_HISTORY_DRIVE_FOLDER_ID`. Never place credentials or health records in this public repository.
-3. After merging, open Actions → **Garmin history backfill (manual, privacy filtered)** → Run workflow.
-4. Start with 365 days and 20 pages. Inspect the output archive. Increase to 3650 days / 100 pages if necessary.
-5. The backfill uploads a dated, sanitized JSON archive to the private folder; it does not overwrite the existing daily summary. It includes only activity type, date, duration, distance, HR, calories, training load/effect and cadence. No activity IDs, coordinates, routes or account identifiers.
-6. Backfill is bounded, may be incomplete if pagination is capped, and depends on Garmin API availability. Inspect the `truncated` field. It is not a complete export of all historical sleep/HRV; that requires a separate validated endpoint and storage plan.
+1. The private, user-owned Drive JSON file `Garmin-History-Archive.json` is pre-created inside the historical archive folder.
+2. The workflow uses its file ID to **update the same file in place**. Service accounts cannot create new files in personal My Drive because they have no storage quota.
+3. The existing Garmin service account has Editor access to the archive file.
+4. Open Actions → **Garmin history backfill (manual, privacy filtered)** → Run workflow.
+5. Start with 365 days and 20 pages. Increase the bounds if needed. Each successful run replaces the previous archive, rather than creating dated versions.
+6. The archive contains only allowlisted activity type, date, duration, distance, HR, calories, training load/effect and cadence. No activity IDs, coordinates, routes or account identifiers.
+7. Backfill is bounded and may be incomplete if pagination is capped. Inspect the `truncated` field. This is not a historical sleep/HRV export.
 
 ## Testing and rollout
 - Verify the daily workflow completes and its Drive report contains the expected sleep date, HRV and supported recovery fields.
