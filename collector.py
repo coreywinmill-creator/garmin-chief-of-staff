@@ -42,6 +42,7 @@ def main():
 'sleep_two_days_ago': lambda: client.get_daily_sleep(
     (today - timedelta(days=2)).isoformat()
 ),
+            'sleep_three_days_ago': lambda: client.get_daily_sleep((today-timedelta(days=3)).isoformat()),
             'steps_7d':lambda:client.get_daily_steps((today-timedelta(days=7)).isoformat(),t),
             'stress_7d':lambda:client.get_daily_stress((today-timedelta(days=7)).isoformat(),t),
             'activities_30d':lambda:client.search_activities(start=0,limit=100,start_date=s,end_date=t),
@@ -87,6 +88,7 @@ def main():
                 except Exception as exc:record[name+'_error']=type(exc).__name__
             if len(record)>1:details.append(record)
         data['sources']['activity_details_30d']=details
+    # Raw data is ephemeral on GitHub Actions. Never commit or upload it.
     for name in ('latest.json', f'garmin-{t}.json'):
         (OUT/name).write_text(
             json.dumps(data, indent=2, default=str),
